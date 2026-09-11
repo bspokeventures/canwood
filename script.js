@@ -51,33 +51,25 @@
     });
   }
 
-  // Work gallery: swipe on small screens, with a counter and arrows
+  // Work gallery: on small screens the photos scroll sideways; keep the counter in step
   var track = document.getElementById('work-track');
   if (track) {
-    var slides = track.querySelectorAll('.spread');
+    var items = track.querySelectorAll('.work__item');
     var current = document.querySelector('[data-current]');
     var total = document.querySelector('[data-total]');
-    if (total) total.textContent = String(slides.length);
-    function slideStep() {
-      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-      return slides[0].offsetWidth + gap;
-    }
+    if (total) total.textContent = String(items.length);
     var ticking = false;
     track.addEventListener('scroll', function () {
       if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () {
-        var i = Math.round(track.scrollLeft / slideStep());
-        if (current) current.textContent = String(Math.min(slides.length, Math.max(1, i + 1)));
+        var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+        var step = items[0].offsetWidth + gap;
+        var i = Math.round(track.scrollLeft / step);
+        if (current) current.textContent = String(Math.min(items.length, Math.max(1, i + 1)));
         ticking = false;
       });
     }, { passive: true });
-    document.querySelectorAll('[data-slide]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var dir = btn.getAttribute('data-slide') === 'next' ? 1 : -1;
-        track.scrollBy({ left: dir * slideStep(), behavior: 'smooth' });
-      });
-    });
   }
 
   // Footer year
