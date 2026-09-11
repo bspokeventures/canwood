@@ -51,6 +51,35 @@
     });
   }
 
+  // Work gallery: swipe on small screens, with a counter and arrows
+  var track = document.getElementById('work-track');
+  if (track) {
+    var slides = track.querySelectorAll('.spread');
+    var current = document.querySelector('[data-current]');
+    var total = document.querySelector('[data-total]');
+    if (total) total.textContent = String(slides.length);
+    function slideStep() {
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return slides[0].offsetWidth + gap;
+    }
+    var ticking = false;
+    track.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        var i = Math.round(track.scrollLeft / slideStep());
+        if (current) current.textContent = String(Math.min(slides.length, Math.max(1, i + 1)));
+        ticking = false;
+      });
+    }, { passive: true });
+    document.querySelectorAll('[data-slide]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var dir = btn.getAttribute('data-slide') === 'next' ? 1 : -1;
+        track.scrollBy({ left: dir * slideStep(), behavior: 'smooth' });
+      });
+    });
+  }
+
   // Footer year
   document.querySelectorAll('[data-year]').forEach(function (el) {
     el.textContent = String(new Date().getFullYear());
